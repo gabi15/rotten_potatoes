@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Movies{% endblock %}
+{% block content %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+{% for msg in messages %}
+<p>{{msg}}</p>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<h3>Search for a movie</h3>
+<form action=# method="GET">
+    <input type="text" name="title" placeholder="Enter movie title"/>
+    <input type="submit" value="submit"/>
+</form>
+
+{% if movies %}
+<table class="table table-striped">
+    <tr>
+        <th>Film name</th>
+        <th>Released</th>
+        <th>Tagline</th>
+        <th>Add to watchlist</th>
+    </tr>
+    {% for movie in movies %}
+    <tr>
+        <td>{{movie['m.title']}}</td>
+        <td>{{movie['m.released']}}</td>
+        <td>{{movie['m.tagline']}}</td>
+        <td>
+                <button type="submit">Watch</button>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+{% endblock %}
