@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Movies{% endblock %}
+{% block content %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+{% for msg in messages %}
+<p>{{msg}}</p>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<h3>All your movies in one place!</h3>
+{% if movies %}
+<table class="table table-striped"
+>
+    <tr>
+        <th>Film name</th>
+        <th>Released</th>
+        <th>Tagline</th>
+        <th>Your rate</th>
+    </tr>
+    {% for movie in movies %}
+    <tr>
+        <td>{{movie['m.title']}}</td>
+        <td>{{movie['m.released']}}</td>
+        <td>{{movie['m.tagline']}}</td>
+        <td>{{movie['r.rate']}}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+{% endblock %}
