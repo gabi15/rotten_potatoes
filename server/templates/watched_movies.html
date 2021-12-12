@@ -1,5 +1,8 @@
 {% extends "base.html" %}
-{% block title %}Movies{% endblock %}
+{% block title %}Watched Movies{% endblock %}
+{% block style %}
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/movies_styles.css') }}">
+{% endblock %}
 {% block content %}
 {% with messages = get_flashed_messages() %}
 {% if messages %}
@@ -8,22 +11,23 @@
 {% endfor %}
 {% endif %}
 {% endwith %}
-<h3>All your movies in one place!</h3>
+<h2>Account of {{email}}</h2>
+<h3>All your watched movies in one place!</h3>
 {% if movies %}
 <table class="table table-striped"
 >
     <tr>
-        <th>Film name</th>
-        <th>Released</th>
-        <th>Tagline</th>
-        <th>Your rate</th>
+        <th  class="td-controls" >Film name</th>
+        <th class="td-controls">Released</th>
+        <th class="td-controls">Tagline</th>
+        <th class="td-controls">Your rate</th>
     </tr>
     {% for movie in movies %}
     <tr>
-        <td>{{movie['m.title']}}</td>
-        <td>{{movie['m.released']}}</td>
-        <td>{{movie['m.tagline']}}</td>
-        <td>{{movie['r.rate']}}</td>
+        <td class="td-controls"><a href="/related?title={{movie['m.title']}}">{{movie['m.title']}}</a></td>
+        <td class="td-controls">{{movie['m.released']}}</td>
+        <td class="td-controls">{{movie['m.tagline']}}</td>
+        <td class="td-controls">{{movie['r.rate']}}</td>
     </tr>
     {% endfor %}
 </table>

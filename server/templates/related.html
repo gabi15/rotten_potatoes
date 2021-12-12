@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %} {{title}} {% endblock %}
+{% block content %}
+{% if people %}
+<h2>People related to {{title}}</h2>
+<h3>Actors</h3>
+<table class="table table-striped">
+    <tr>
+        <th class="td-controls">Person name</th>
+        <th class="td-controls">Character name</th>
+    </tr>
+    {% for person in people %}
+    {% if person['Type(relatedTo)']=="ACTED_IN" %}
+    <tr>
+        <td class="td-controls">{{person['people.name']}}</td>
+        <td class="td-controls">{{person['relatedTo.roles']}}</td>
+    </tr>
+    {% endif %}
+    {% endfor %}
+</table>
+
+<h3>Others</h3>
+<table class="table table-striped">
+    <tr>
+        <th class="td-controls">Person name</th>
+        <th class="td-controls">Contribution type</th>
+    </tr>
+    {% for person in people %}
+        {% if person['Type(relatedTo)']!="ACTED_IN" %}
+        <tr>
+            <td class="td-controls">{{person['people.name']}}</td>
+            <td class="td-controls">{{person['Type(relatedTo)']}}</td>
+        </tr>
+        {% endif %}
+    {% endfor %}
+</table>
+{% endif %}
+{% endblock %}

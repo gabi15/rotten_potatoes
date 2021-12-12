@@ -13,13 +13,8 @@
 {% endwith %}
 <h2>Account of {{email}}</h2>
 <br>
-<h3>Search for a movie</h3>
-<form action=# method="GET">
-        <div class="form-inline">
-        <input type="text" class="form-control" name="title" placeholder="Enter movie title"/>
-        <input type="submit" class="btn btn-primary btn-lg" value="Submit"/>
-    </div>
-</form>
+<h3>Movies you may like based on what people with taste similar to yours watch</h3>
+
 <div class="alert alert-success" role="alert" id="info" style="visibility:hidden">
     <p id="info_text"></p>
 </div>
@@ -38,12 +33,13 @@
     </tr>
     {% for movie in movies %}
     <tr>
-        <td class="td-controls"><a href="/related?title={{movie['m.title']}}">{{movie['m.title']}}</a></td>
+        <td class="td-controls">{{movie['m.title']}}</td>
         <td class="td-controls">{{movie['m.released']}}</td>
         <td class="td-controls">{{movie['m.tagline']}}</td>
         {% set id_rated_name = movie['m.title'] + "_rated" %}
-        <td id="{{id_rated_name}}" class="td-controls"><b>{{movie['r.rate']}}</b></td>
+        <td id="{{id_rated_name}}" class="td-controls"><b>-</b></td>
         {% set id_watched_name = movie['m.title'] + "_watched" %}
+        {% set id_unwatch_name = movie['m.title'] + "_unwatch" %}
         {% set id_rate_name = movie['m.title'] + "_rate" %}
         <td class="td-controls">
               <select class="form-select" name="rates" id="{{id_rate_name}}">
@@ -60,13 +56,7 @@
               </select>
             <button type="button" class="btn btn-primary table-btn" id="{{id_watched_name}}" onclick="server.add_to_watched('{{movie['m.title']}}')">Rate</button>
         </td>
-        {% if movie['r.rate'] != '-' %}
-            {% set id_unwatch_name = movie['m.title'] + "_unwatch" %}
-            <td class="td-controls"><button type="button" class="btn btn-primary table-btn" id="{{id_unwatch_name}}" onclick="server.delete_from_watched('{{movie['m.title']}}')">Unwatch</button></td>
-        {% else %}
-            {% set id_unwatch_name = movie['m.title'] + "_unwatch" %}
-            <td class="td-controls"><button type="button" class="btn btn-primary table-btn" disabled id="{{id_unwatch_name}}" onclick="server.delete_from_watched('{{movie['m.title']}}')">Unwatch</button></td>
-        {% endif %}
+        <td class="td-controls"><button type="button" class="btn btn-primary table-btn" disabled id="{{id_unwatch_name}}" onclick="server.delete_from_watched('{{movie['m.title']}}')">Unwatch</button></td>
 
         {% if movie['m.title'] in want_to_watch %}
             {% set id_unwant_name = movie['m.title'] + "_unwant" %}
@@ -78,11 +68,12 @@
             {% set id_want_name = movie['m.title'] + "_want" %}
             <td class="td-controls"><button type="button" class="btn btn-primary" id="{{id_want_name}}" onclick="server.add_to_want_to_watch('{{movie['m.title']}}', '{{id_unwant_name}}', '{{id_want_name}}')">Add to watchlist</button></td>
             <td class="td-controls"><button type="button" class="btn btn-primary" disabled id="{{id_unwant_name}}" onclick="server.delete_from_want_to_watch('{{movie['m.title']}}', '{{id_unwant_name}}', '{{id_want_name}}')">Delete from watchlist</button></td>
-
         {% endif %}
     </tr>
     {% endfor %}
 </table>
+{% else %}
+<h4>Oops, looks like you need to rate some more movies to see recommendations</h4>
 {% endif %}
 
 {% endblock %}

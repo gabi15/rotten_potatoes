@@ -7,7 +7,6 @@ import jyserver.Flask as jsf
 
 load_dotenv()
 
-
 app = Flask(__name__)
 app.secret_key = "hello"
 
@@ -33,8 +32,7 @@ class App:
     def add_to_watched(self, title):
         id_unwatch_name = title+"_unwatch"
         id_rate_name = title + "_rate"
-        self.js.document.getElementById(id_unwatch_name).disabled = False
-        self.flash_info(f"Successfully rated {title}")
+        id_rated_name = title + "_rated"
         rate = self.js.document.getElementById(id_rate_name).value
         rate = str(rate)
         rate = int(rate)
@@ -43,66 +41,60 @@ class App:
         watched_map = {"email": email, "title": title, "rate": rate}
         try:
             create = driver_session.run(watched_query, watched_map)
+            self.js.document.getElementById(id_unwatch_name).disabled = False
+            self.flash_info(f"Successfully rated {title}")
+            self.js.document.getElementById(id_rated_name).innerText = rate
+            self.js.document.getElementById(id_rated_name).style.fontWeight = 'bold'
             return create.data()
         except Exception as e:
-            print("occured an exception")
             print(e)
             return "sth went wrong"
 
     def delete_from_watched(self, title):
-        print('delete')
         id_unwatch_name = title+"_unwatch"
         self.js.document.getElementById(id_unwatch_name).disabled = True
-        print(title)
         email = session["email"]
         watched_query = """match (u:User{email:$email})-[r:WATCHED]->(m:Movie{title:$title}) delete r"""
         watched_map = {"email": email, "title": title}
         try:
             driver_session.run(watched_query, watched_map)
-            return f"employee node is created"
+            self.flash_info(f"Successfully deleted from watched {title}")
+            return "success"
         except Exception as e:
+            print(e)
             return "sth went wrong"
 
     def delete_from_want_to_watch(self, title, id_unwant_name, id_want_name):
-        print('dont want to!')
         self.js.document.getElementById(id_unwant_name).disabled = True
         self.js.document.getElementById(id_want_name).disabled = False
-        print(title)
         email = session["email"]
         want_query = """match (u:User{email:$email})-[r:WANT_TO_WATCH]->(m:Movie{title:$title}) delete r"""
         want_map = {"email": email, "title": title}
         try:
             driver_session.run(want_query, want_map)
-            return f"employee node is created"
+            self.flash_info(f"Successfully deleted from watchlist {title}")
+            return "success"
         except Exception as e:
             return "sth went wrong"
 
     def add_to_want_to_watch(self, title, id_unwant_name, id_want_name):
-        print('want to!')
         self.js.document.getElementById(id_unwant_name).disabled = False
         self.js.document.getElementById(id_want_name).disabled = True
-        print(title)
         email = session["email"]
         want_query = """match (u:User{email:$email}),(m:Movie{title:$title}) merge (u)-[r:WANT_TO_WATCH]->(m) return type(r)"""
         want_map = {"email": email, "title": title}
         try:
             driver_session.run(want_query, want_map)
-            return f"employee node is created"
+            self.flash_info(f"Successfully added to watchlist {title}")
+            return "success"
         except Exception as e:
+            print(e)
             return "sth went wrong"
-
-
-@app.route("/")
-def home():
-    return App.render(render_template("index.html"))
 
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        # data = request.get_json()
-        # email = data["email"]
-        # password = data["password"]
         email = request.form["email"]
         password = request.form["password"]
         create_user_query = """create(u:User{email: $email, password: $password})"""
@@ -116,9 +108,10 @@ def register():
             else:
                 driver_session.run(create_user_query, {'email': email, 'password': password})
                 session["email"] = email
-                return redirect(url_for("user"))
+                return redirect(url_for("movies"))
 
         except Exception as e:
+            print(e)
             return "sth went wrong"
     else:
         return render_template("register.html")
@@ -128,9 +121,6 @@ def register():
 def login():
     if request.method == "POST":
         session.permanent = True
-        # data = request.get_json()
-        # email = data["email"]
-        # password = data["password"]
         email = request.form["email"]
         password = request.form["password"]
         session["email"] = email
@@ -141,24 +131,16 @@ def login():
 
         if found_user_data:
             session["email"] = email
-            return redirect(url_for("user"))
+            return redirect(url_for("movies"))
         else:
             flash("Login unsuccesful!")
             return render_template("login.html")
     else:
         if "email" in session:
             flash("Already logged in!")
-            return redirect(url_for("user"))
+            return redirect(url_for("movies"))
 
         return render_template("login.html")
-
-
-@app.route("/user", methods=["POST", "GET"])
-def user():
-    if "email" in session:
-        email = session["email"]
-        return render_template("user.html", email=email)
-    return redirect(url_for("home"))
 
 
 @app.route("/moviesearch", methods=["GET", "POST"])
@@ -178,37 +160,84 @@ def movies():
                 found_want_to_watch_movies_data = found_want_to_watch_movies.data()
                 found_movies_data = found_movies.data()
                 found_watched_movies_data = found_watched_movies.data()
-                found_watched_list = [val['m.title'] for val in found_watched_movies_data]
-                fount_want_to_watch_list = [val['m.title'] for val in found_want_to_watch_movies_data]
-                print(found_watched_movies_data)
-                print(found_watched_list)
+                found_watched_dict = {el['m.title']: el['r.rate'] for el in found_watched_movies_data}
+                found_want_to_watch_list = [val['m.title'] for val in found_want_to_watch_movies_data]
+                for el in found_movies_data:
+                    print(el['m.title'])
+                    if el['m.title'] in found_watched_dict.keys():
+                        el['r.rate'] = found_watched_dict[el['m.title']]
+                    else:
+                        el['r.rate'] = '-'
+                print(found_movies_data)
+
                 if found_movies_data:
-                    return App.render(render_template("movies.html", movies=found_movies_data, watched=found_watched_list,
-                                                      want_to_watch=fount_want_to_watch_list, email=email))
+                    return App.render(render_template("movies.html", movies=found_movies_data,
+                                                      want_to_watch=found_want_to_watch_list, email=email))
                 else:
                     flash("There are no movies containing this phrase")
             return App.render(render_template("movies.html", email=email))
-    return redirect(url_for("home"))
+    return redirect(url_for("login"))
 
 
 @app.route("/watched_movies")
 def watched_movies():
     if request.method == "GET":
         email = session['email']
-        watched_movies_query = """match (u:User{email: $email})-[r:WATCHED]->(m:Movie) return m.title, m.tagline, m.released, r.rate"""
+        watched_movies_query = """match (u:User{email: $email})-[r:WATCHED]->(m:Movie) return m.title, m.tagline, m.released, r.rate order by r.rate DESC"""
         found_watched_movies = driver_session.run(watched_movies_query, {'email': email})
         found_movies_data = found_watched_movies.data()
-        return render_template("watched_movies.html", movies=found_movies_data)
+        return render_template("watched_movies.html", movies=found_movies_data, email=email)
 
 
 @app.route("/want_to_watch")
 def want_to_watch():
     if request.method == "GET":
         email = session['email']
-        want_to_watch_query = """match (u:User{email: $email})-[r:WATCHED]->(m:Movie) return m.title, m.tagline, m.released"""
+        want_to_watch_query = """match (u:User{email: $email})-[r:WANT_TO_WATCH]->(m:Movie) return m.title, m.tagline, m.released"""
         found_movies = driver_session.run(want_to_watch_query, {'email': email})
         found_movies_data = found_movies.data()
-        return render_template("want_to_watch.html", movies=found_movies_data)
+        return render_template("want_to_watch.html", movies=found_movies_data, email=email)
+
+
+@app.route('/recommendations')
+def recommendations():
+    if request.method == "GET":
+        email = session['email']
+        movies_query = """MATCH (p1:User {email: $email})-[x:WATCHED]->(m:Movie)<-[y:WATCHED]-(p2:User)
+        WITH COUNT(m) AS numbermovies, SUM(x.rate * y.rate) AS xyDotProduct,
+        SQRT(REDUCE(xDot = 0.0, a IN COLLECT(x.rate) | xDot + a^2)) AS xLength,
+        SQRT(REDUCE(yDot = 0.0, b IN COLLECT(y.rate) | yDot + b^2)) AS yLength,
+        p1, p2
+        WITH p1, p2, xyDotProduct / (xLength * yLength) AS sim
+        ORDER BY sim DESC
+        LIMIT 100
+        MATCH (p2)-[r:WATCHED]->(m:Movie) WHERE NOT EXISTS( (p1)-[:WATCHED]->(m) )
+        
+        RETURN m.title, m.released, m.tagline, SUM( sim * r.rate) AS score
+        ORDER BY score DESC LIMIT 25"""
+        found_movies = driver_session.run(movies_query, {'email': email})
+        found_movies_data = found_movies.data()
+        titles = [val['m.title'] for val in found_movies_data]
+        get_want_to_watch_movies_query = '''match(m:Movie)-[r:WANT_TO_WATCH]-(u:User{email:$email}) WHERE m.title in $titles return m.title'''
+        found_want_to_watch_movies = driver_session.run(get_want_to_watch_movies_query, {'email': email, 'titles': titles})
+        found_want_to_watch_movies_data = found_want_to_watch_movies.data()
+        found_want_to_watch_list = [val['m.title'] for val in found_want_to_watch_movies_data]
+        print(titles)
+        print(found_want_to_watch_movies_data)
+
+        return App.render(render_template("recommendations.html", movies=found_movies_data, email=email, want_to_watch=found_want_to_watch_list))
+
+
+@app.route("/related")
+def related():
+    if request.method == "GET":
+        email = session['email']
+        title = request.args.get('title')
+        people_query = """MATCH (people:Person)-[relatedTo]-(:Movie {title: $title}) RETURN people.name, Type(relatedTo), relatedTo.roles"""
+        found_people = driver_session.run(people_query, {'title': title})
+        found_people_data = found_people.data()
+        return render_template("related.html", people=found_people_data, email=email, title=title)
+    return {}
 
 
 @app.route("/logout")

@@ -8,20 +8,21 @@
 {% endfor %}
 {% endif %}
 {% endwith %}
-<h3>All your movies in one place!</h3>
+<h2>Account of {{email}}</h2>
+<h3>All the movies you want to watch in one place!</h3>
 {% if movies %}
 <table class="table table-striped"
 >
     <tr>
-        <th>Film name</th>
-        <th>Released</th>
-        <th>Tagline</th>
+        <th class="td-controls">Film name</th>
+        <th class="td-controls">Released</th>
+        <th class="td-controls">Tagline</th>
     </tr>
     {% for movie in movies %}
     <tr>
-        <td>{{movie['m.title']}}</td>
-        <td>{{movie['m.released']}}</td>
-        <td>{{movie['m.tagline']}}</td>
+        <td class="td-controls"><a href="/related?title={{movie['m.title']}}">{{movie['m.title']}}</a></td>
+        <td class="td-controls">{{movie['m.released']}}</td>
+        <td class="td-controls">{{movie['m.tagline']}}</td>
     </tr>
     {% endfor %}
 </table>
