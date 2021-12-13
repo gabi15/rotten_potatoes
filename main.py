@@ -45,10 +45,10 @@ class App:
             self.flash_info(f"Successfully rated {title}")
             self.js.document.getElementById(id_rated_name).innerText = rate
             self.js.document.getElementById(id_rated_name).style.fontWeight = 'bold'
-            return create.data()
+            return jsonify(create.data())
         except Exception as e:
             print(e)
-            return "sth went wrong"
+            return jsonify("sth went wrong")
 
     def delete_from_watched(self, title):
         id_unwatch_name = title+"_unwatch"
@@ -59,10 +59,10 @@ class App:
         try:
             driver_session.run(watched_query, watched_map)
             self.flash_info(f"Successfully deleted from watched {title}")
-            return "success"
+            return jsonify("success")
         except Exception as e:
             print(e)
-            return "sth went wrong"
+            return jsonify("sth went wrong")
 
     def delete_from_want_to_watch(self, title, id_unwant_name, id_want_name):
         self.js.document.getElementById(id_unwant_name).disabled = True
@@ -73,9 +73,9 @@ class App:
         try:
             driver_session.run(want_query, want_map)
             self.flash_info(f"Successfully deleted from watchlist {title}")
-            return "success"
+            return jsonify("success")
         except Exception as e:
-            return "sth went wrong"
+            return jsonify("sth went wrong")
 
     def add_to_want_to_watch(self, title, id_unwant_name, id_want_name):
         self.js.document.getElementById(id_unwant_name).disabled = False
@@ -89,7 +89,7 @@ class App:
             return "success"
         except Exception as e:
             print(e)
-            return "sth went wrong"
+            return jsonify("sth went wrong")
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -248,5 +248,5 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0', port=5001, debug=True)
 
