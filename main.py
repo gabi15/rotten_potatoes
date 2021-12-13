@@ -65,8 +65,8 @@ class App:
             return jsonify("sth went wrong")
 
     def delete_from_want_to_watch(self, title, id_unwant_name, id_want_name):
-        self.js.document.getElementById(id_unwant_name).disabled = True
-        self.js.document.getElementById(id_want_name).disabled = False
+        # self.js.document.getElementById(id_unwant_name).disabled = True
+        # self.js.document.getElementById(id_want_name).disabled = False
         email = session["email"]
         want_query = """match (u:User{email:$email})-[r:WANT_TO_WATCH]->(m:Movie{title:$title}) delete r"""
         want_map = {"email": email, "title": title}
