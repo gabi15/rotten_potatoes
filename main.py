@@ -8,7 +8,7 @@ import jyserver.Flask as jsf
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = "hello"
+app.secret_key = "\xd7\xd6.\xf8\xbe\xf3\xe5\xbdJ\x05/D\xd8\xc8S\xe7(\xb4V2}z\xc3\xe3"
 
 app.permanent_session_lifetime = timedelta(days=5)
 
@@ -248,5 +248,5 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run()
 
