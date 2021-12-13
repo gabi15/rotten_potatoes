@@ -45,27 +45,28 @@ class App:
             self.flash_info(f"Successfully rated {title}")
             self.js.document.getElementById(id_rated_name).innerText = rate
             self.js.document.getElementById(id_rated_name).style.fontWeight = 'bold'
-            return jsonify(create.data())
+            return create.data()
         except Exception as e:
             print(e)
-            return jsonify("sth went wrong")
+            return "sth went wrong"
 
     def delete_from_watched(self, title):
         id_unwatch_name = title+"_unwatch"
         self.js.document.getElementById(id_unwatch_name).disabled = True
+        self.js.console.log('aaa')
         email = session["email"]
         watched_query = """match (u:User{email:$email})-[r:WATCHED]->(m:Movie{title:$title}) delete r"""
         watched_map = {"email": email, "title": title}
         try:
             driver_session.run(watched_query, watched_map)
             self.flash_info(f"Successfully deleted from watched {title}")
-            return jsonify("success")
+            return "success"
         except Exception as e:
             print(e)
-            return jsonify("sth went wrong")
+            return "sth went wrong"
 
     def delete_from_want_to_watch(self, title, id_unwant_name, id_want_name):
-        return {}
+        self.js.console.log('aaa')
         # self.js.document.getElementById(id_unwant_name).disabled = True
         # self.js.document.getElementById(id_want_name).disabled = False
         # email = session["email"]
