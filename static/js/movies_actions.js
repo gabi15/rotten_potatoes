@@ -6,7 +6,6 @@ function delete_from_watched(title) {
       document.getElementById(id_unwatch_name).disabled = true
       document.getElementById("info").style.visibility = "visible"
       document.getElementById("info_text").innerText = "Successfully deleted from watched " + title
-      console.log(title)
     }
   };
   xhttp.open("POST", "/unrate", true);
@@ -22,7 +21,6 @@ function delete_from_want_to_watch(title, id_unwant_name, id_want_name) {
       document.getElementById(id_want_name).disabled = false
       document.getElementById("info").style.visibility = "visible"
       document.getElementById("info_text").innerText = "Successfully deleted from watchlist " + title
-      console.log(title)
     }
   };
   xhttp.open("POST", "/unwant", true);
@@ -38,7 +36,6 @@ function add_to_want_to_watch(title, id_unwant_name, id_want_name) {
       document.getElementById(id_want_name).disabled = true
       document.getElementById("info").style.visibility = "visible"
       document.getElementById("info_text").innerText = "Successfully added to watchlist " + title
-      console.log(title)
     }
   };
   xhttp.open("POST", "/want", true);
@@ -50,7 +47,6 @@ function add_to_watched(title){
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      console.log('aa')
       var id_unwatch_name = title+"_unwatch"
       var id_rate_name = title + "_rate"
       var id_rated_name = title + "_rated"
@@ -60,7 +56,6 @@ function add_to_watched(title){
       document.getElementById(id_unwatch_name).disabled = false
       document.getElementById(id_rated_name).innerText = rate
       document.getElementById(id_rated_name).style.fontWeight = 'bold'
-      console.log(title)
     }
   };
   var id_rate_name = title + "_rate"
