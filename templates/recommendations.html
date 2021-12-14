@@ -54,20 +54,20 @@
                   <option value="9">9</option>
                   <option value="10">10</option>
               </select>
-            <button type="button" class="btn btn-primary table-btn" id="{{id_watched_name}}" onclick="server.add_to_watched('{{movie['m.title']}}')">Rate</button>
+            <button type="button" class="btn btn-primary table-btn" id="{{id_watched_name}}" onclick="add_to_watched('{{movie['m.title']}}')">Rate</button>
         </td>
-        <td class="td-controls"><button type="button" class="btn btn-primary table-btn" disabled id="{{id_unwatch_name}}" onclick="server.delete_from_watched('{{movie['m.title']}}')">Unwatch</button></td>
+        <td class="td-controls"><button type="button" class="btn btn-primary table-btn" disabled id="{{id_unwatch_name}}" onclick="delete_from_watched('{{movie['m.title']}}')">Unwatch</button></td>
 
         {% if movie['m.title'] in want_to_watch %}
             {% set id_unwant_name = movie['m.title'] + "_unwant" %}
             {% set id_want_name = movie['m.title'] + "_want" %}
-            <td class="td-controls"><button type="button" class="btn btn-primary" disabled id="{{id_want_name}}" onclick="server.add_to_want_to_watch('{{movie['m.title']}}', '{{id_unwant_name}}', '{{id_want_name}}')">Add to watchlist</button></td>
-            <td class="td-controls"><button type="button" class="btn btn-primary" id="{{id_unwant_name}}" onclick="server.delete_from_want_to_watch('{{movie['m.title']}}','{{id_unwant_name}}', '{{id_want_name}}')">Delete from watchlist</button></td>
+            <td class="td-controls"><button type="button" class="btn btn-primary" disabled id="{{id_want_name}}" onclick="add_to_want_to_watch('{{movie['m.title']}}', '{{id_unwant_name}}', '{{id_want_name}}')">Add to watchlist</button></td>
+            <td class="td-controls"><button type="button" class="btn btn-primary" id="{{id_unwant_name}}" onclick="delete_from_want_to_watch('{{movie['m.title']}}','{{id_unwant_name}}', '{{id_want_name}}')">Delete from watchlist</button></td>
         {% else %}
             {% set id_unwant_name = movie['m.title'] + "_unwant" %}
             {% set id_want_name = movie['m.title'] + "_want" %}
-            <td class="td-controls"><button type="button" class="btn btn-primary" id="{{id_want_name}}" onclick="server.add_to_want_to_watch('{{movie['m.title']}}', '{{id_unwant_name}}', '{{id_want_name}}')">Add to watchlist</button></td>
-            <td class="td-controls"><button type="button" class="btn btn-primary" disabled id="{{id_unwant_name}}" onclick="server.delete_from_want_to_watch('{{movie['m.title']}}', '{{id_unwant_name}}', '{{id_want_name}}')">Delete from watchlist</button></td>
+            <td class="td-controls"><button type="button" class="btn btn-primary" id="{{id_want_name}}" onclick="add_to_want_to_watch('{{movie['m.title']}}', '{{id_unwant_name}}', '{{id_want_name}}')">Add to watchlist</button></td>
+            <td class="td-controls"><button type="button" class="btn btn-primary" disabled id="{{id_unwant_name}}" onclick="delete_from_want_to_watch('{{movie['m.title']}}', '{{id_unwant_name}}', '{{id_want_name}}')">Delete from watchlist</button></td>
         {% endif %}
     </tr>
     {% endfor %}
@@ -75,5 +75,5 @@
 {% else %}
 <h4>Oops, looks like you need to rate some more movies to see recommendations</h4>
 {% endif %}
-
+<script type=text/javascript src="{{url_for('static', filename='js/movies_actions.js') }}"></script>
 {% endblock %}
