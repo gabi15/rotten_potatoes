@@ -37,7 +37,7 @@ function add_to_want_to_watch(title, id_unwant_name, id_want_name) {
       document.getElementById(id_unwant_name).disabled = false
       document.getElementById(id_want_name).disabled = true
       document.getElementById("info").style.visibility = "visible"
-      document.getElementById("info_text").innerText = "Successfully added to watchlist" + title
+      document.getElementById("info_text").innerText = "Successfully added to watchlist " + title
       console.log(title)
     }
   };
@@ -56,7 +56,7 @@ function add_to_watched(title){
       var id_rated_name = title + "_rated"
       rate = document.getElementById(id_rate_name).value
       document.getElementById("info").style.visibility = "visible"
-      document.getElementById("info_text").innerText = "Successfully rated" + title
+      document.getElementById("info_text").innerText = "Successfully rated " + title
       document.getElementById(id_unwatch_name).disabled = false
       document.getElementById(id_rated_name).innerText = rate
       document.getElementById(id_rated_name).style.fontWeight = 'bold'
